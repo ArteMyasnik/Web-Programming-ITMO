@@ -1,0 +1,99 @@
+html {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  color: blueviolet;
+}
+b {
+  color: crimson;
+}
+i {
+  color: green;
+}
+body {
+  font-size: 18px;
+  background: #d8a8a8 url(../img/Art_Van_Der_Ner.jpg) no-repeat center center;
+  height: 100vh;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.p2 {
+  color: aqua;
+}
+#id-lorem-text {
+  color: rgb(236, 140, 22);
+}
+div b,
+div i {
+  color: grey;
+}
+.main-link {
+  color: darkorange;
+  text-decoration: none;
+}
+.main-link:hover {
+  color: orangered;
+  text-decoration: underline;
+  text-decoration-color: blue;
+  cursor: pointer;
+}
+/* .main-link:visited {
+  color: cyan;
+} */
+.main-link:active {
+  text-decoration: line-through;
+  color: grey;
+}
+
+input {
+  color: blueviolet;
+}
+
+input:focus {
+  color: red;
+}
+.p_text {
+  color: red;
+  text-align: center;
+  font-size: 1.5em;
+  font-style: normal;
+  font-weight: bold;
+  text-transform: capitalize;
+  word-spacing: 5px;
+  letter-spacing: -2.25px;
+  line-height: 25px;
+  cursor: copy;
+}
+
+.main-div {
+  background-color: aquamarine;
+  height: 200px;
+  width: 75%;
+  border: 7px salmon dashed;
+  border-bottom: 0px;
+  border-top-style: ridge;
+  border-radius: 5px 30px 70px 100px;
+  margin: 50px;
+  padding: 10px;
+
+  display: block;
+}
+
+.block-div {
+  margin: 20px;
+  background-color: dodgerblue;
+  height: 200px;
+  width: 200px;
+}
+
+#first-div {
+  background-color: fuchsia;
+  float: right;
+}
+
+#second-div {
+  float: left;
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="author" content="Myasnikov Artem"/>
+    <meta name="description" content="Web-programming. Laboratory 1"/>
+    <title>Main page</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+<table id="main-table">
+    <tr id="header-row">
+        <td colspan="2">
+            <h1 class="group-variant">Myasnikov Artem Valerievich</h1>
+            <h2 class="group-variant">Group: P3223</h2>
+            <h2 class="group-variant">Variant: 466816</h2>
+        </td>
+    </tr>
+    <tr>
+        <td id="aside-column">
+            <form>
+                <svg width="200px" height="300px" style="border: 1px solid #ccaa72;">
+                    <!--                    Треугольник-->
+                    <polygon points="100,150 180,150 100,70" fill="#2f1f42" stroke="#5f398d" stroke-width="2"/>
+
+                    <!--                    Прямоугольник-->
+                    <rect x="100" y="150" width="80" height="40" fill="#2f1f42" stroke="#5f398d" stroke-width="2"/>
+
+                    <!--                    Четверть круга-->
+                    <path d="M100,150 L100,230 A80,80 0 0,1 20,150 L100,150 Z" fill="#2f1f42" stroke="#5f398d" stroke-width="2"></path>
+
+                    <!--                    Arrow OY-->
+                    <line x1="100px" y1="20px" x2="100px" y2="280px" stroke-width="2" stroke="#ccaa72"/>
+                    <line x1="100px" y1="20px" x2="105px" y2="25px" stroke-width="2" stroke="#ccaa72"/>
+                    <line x1="100px" y1="20px" x2="95px" y2="25px" stroke-width="2" stroke="#ccaa72"/>
+                    <text x="105px" y="25px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">Y</text>
+
+                    <!--                    Arrow OX-->
+                    <line x1="10px" y1="150px" x2="195px" y2="150px" stroke-width="2" stroke="#ccaa72"/>
+                    <line x1="190px" y1="145px" x2="195px" y2="150px" stroke-width="2" stroke="#ccaa72"/>
+                    <line x1="190px" y1="155px" x2="195px" y2="150px" stroke-width="2" stroke="#ccaa72"/>
+                    <text x="190px" y="140px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">X</text>
+
+                    <!--                    Radius-->
+                    <text x="20px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R</text>
+                    <text x="60px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R/2</text>
+                    <text x="140px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R/2</text>
+                    <text x="180px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R</text>
+
+                    <text x="102px" y="70px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R</text>
+                    <text x="102px" y="110px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R/2</text>
+                    <text x="102px" y="190px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R/2</text>
+                    <text x="102px" y="230" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R</text>
+
+
+                </svg>
+                <br>
+
+                <!--                Coordinate X-->
+                <label for="coordinate_x">Coordinate X</label><select id="coordinate_x" name="x" required>
+                    <option value="" disabled selected>Выберите значение</option>
+                    <option value="-5">-5</option>
+                    <option value="-4">-4</option>
+                    <option value="-3">-3</option>
+                    <option value="-2">-2</option>
+                    <option value="-1">-1</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+                <br>
+
+                <!--                Coordinate Y-->
+                <label for="coordinate_y">Coordinate Y</label><input type="text" id="coordinate_y" name="y" placeholder="Введите число от -3 до 3" required>
+                <br>
+
+                <!--                Radius-->
+                <label for="radius">Radius</label><input type="text" id="radius" name="radius" placeholder="Введите число от 1 до 4" required>
+                <br>
+
+                <!--                Submit button-->
+                <button type="submit" onclick="sendPostRequest()">SUBMIT</button>
+            </form>
+        </td>
+
+        <td id="main-column">
+            <h2>Results</h2>
+            <table id="results-table">
+                <tr>
+                    <td>Coordinate X</td>
+                    <td>Coordinate Y</td>
+                    <td>Radius R</td>
+                    <td>Fact of entering the area</td>
+                    <td>Current time</td>
+                    <td>Script execution time</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<script src="./js/main.js"></script>
+</body>
+</html>
