@@ -2,11 +2,13 @@
     margin: 0;
     padding: 0;
 }
+/* Основные стили страницы */
 body {
     background: #000;
     color: #ccaa72;
 }
 
+/* Главная таблица-контейнер */
 #main-table {
     border: 5px solid #ccaa72;
     width: 100%;
@@ -14,6 +16,7 @@ body {
     border-collapse: collapse;
 }
 
+/* Шапка с ФИО и группой */
 #header-row {
     border-bottom: 5px solid #ccaa72;
     color: #ccaa72;
@@ -27,11 +30,13 @@ body {
     padding: 3px;
 }
 
+/* Текст с информацией о группе и варианте */
 .group-variant {
     font-family: "Roboto Light", monospace;
     font-size: 30px;
 }
 
+/* Колонки основного контента */
 #aside-column, #main-column {
     height: 85%;
     border: 5px solid #ccaa72;
@@ -40,6 +45,7 @@ body {
     padding: 10px;
 }
 
+/* Левая колонка с формой */
 #aside-column {
     width: 30%;
 }
@@ -48,16 +54,156 @@ body {
     max-width: 30%;
 }
 
+/* Правая колонка с результатами */
 #main-column {
     width: 70%;
     vertical-align: top;
     text-align: center;
 }
 
+/* Таблица результатов */
 #results-table {
     text-align: center;
     width: 100%;
     border: 5px solid #ccaa72;
+    border-collapse: collapse;
     font-size: 14px;
     background: #2f1f42;
+    margin-top: 10px;
+}
+
+/* Ячейки таблицы результатов */
+#results-table th,
+#results-table td {
+    border: 3px solid #ccaa72;
+    padding: 3px 3px;
+    font-family: "Roboto Light", sans-serif;
+}
+
+/* Заголовки таблицы результатов */
+#results-table th {
+    background: #1a1029;
+    color: #ccaa72;
+    font-weight: bold;
+    border-bottom: 2px solid #ccaa72;
+}
+
+/* Таблица формы ввода */
+.form-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin-top: 20px;
+}
+
+.form-table td {
+    padding: 8px 0;
+    vertical-align: top;
+}
+
+/* Отступ для меток полей ввода */
+.form-table td:first-child {
+    padding-right: 15px;
+    width: 120px;
+}
+
+/* Метки полей формы */
+.form-table label {
+    display: block;
+    margin-bottom: 5px;
+    font-family: "Roboto Light", sans-serif;
+    font-size: 16px;
+    color: #ccaa72;
+    white-space: nowrap;
+}
+
+/* Стили выпадающего списка */
+select {
+    width: 100%;
+    padding: 8px 12px;
+    background: #2f1f42;
+    border: 2px solid #ccaa72;
+    border-radius: 4px;
+    color: #ccaa72;
+    font-family: "Roboto Light", sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+select:focus {
+    border-color: #5f398d;
+}
+
+/* Опции выпадающего списка */
+select option {
+    background: #2f1f42;
+    color: #ccaa72;
+    padding: 8px;
+}
+
+/* Стили текстовых полей ввода */
+input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    background: #2f1f42;
+    border: 2px solid #ccaa72;
+    border-radius: 4px;
+    color: #ccaa72;
+    font-family: "Roboto Light", sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+    border-color: #5f398d;
+}
+
+/* Плейсхолдеры текстовых полей */
+input[type="text"]::placeholder {
+    color: #8a6f3e;
+    opacity: 0.7;
+}
+
+/* Стили кнопки отправки */
+button[type="submit"] {
+    width: 100%;
+    padding: 12px 24px;
+    background: #2f1f42;
+    border: 2px solid #ccaa72;
+    border-radius: 4px;
+    color: #ccaa72;
+    font-family: "Roboto Light", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+/* Эффекты при наведении на кнопку */
+button[type="submit"]:hover {
+    background: #5f398d;
+    border-color: #5f398d;
+    color: #fff;
+}
+
+button[type="submit"]:active {
+    transform: translateY(1px);
+}
+
+/* Подсказки диапазонов значений */
+.range-hint {
+    font-size: 12px;
+    color: #8a6f3e;
+    margin-top: 3px;
+    font-family: "Roboto Light", sans-serif;
+}
+
+/* Обозначение обязательных полей */
+.required {
+    color: #ff6b6b;
 }

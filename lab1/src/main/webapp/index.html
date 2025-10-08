@@ -59,31 +59,57 @@
                 </svg>
                 <br>
 
-                <!--                Coordinate X-->
-                <label for="coordinate_x">Coordinate X</label><select id="coordinate_x" name="x" required>
-                    <option value="" disabled selected>Выберите значение</option>
-                    <option value="-5">-5</option>
-                    <option value="-4">-4</option>
-                    <option value="-3">-3</option>
-                    <option value="-2">-2</option>
-                    <option value="-1">-1</option>
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                </select>
-                <br>
+                <table class="form-table">
+                    <!-- Coordinate X -->
+                    <tr>
+                        <td>
+                            <label for="coordinate_x">Coordinate X</label>
+                        </td>
+                        <td>
+                            <select id="coordinate_x" name="x" required>
+                                <option value="" disabled selected>Select value</option>
+                                <option value="-5">-5</option>
+                                <option value="-4">-4</option>
+                                <option value="-3">-3</option>
+                                <option value="-2">-2</option>
+                                <option value="-1">-1</option>
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </td>
+                    </tr>
 
-                <!--                Coordinate Y-->
-                <label for="coordinate_y">Coordinate Y</label><input type="text" id="coordinate_y" name="y" placeholder="Введите число от -3 до 3" required>
-                <br>
+                    <!-- Coordinate Y -->
+                    <tr>
+                        <td>
+                            <label for="coordinate_y">Coordinate Y</label>
+                        </td>
+                        <td>
+                            <input type="text" id="coordinate_y" name="y" placeholder="From -3 to 3" required>
+                            <div class="range-hint">Range: -3 ... 3</div>
+                        </td>
+                    </tr>
 
-                <!--                Radius-->
-                <label for="radius">Radius</label><input type="text" id="radius" name="radius" placeholder="Введите число от 1 до 4" required>
-                <br>
+                    <!-- Radius -->
+                    <tr>
+                        <td>
+                            <label for="radius">Radius</label>
+                        </td>
+                        <td>
+                            <input type="text" id="radius" name="radius" placeholder="From 1 to 4" required>
+                            <div class="range-hint">Range: 1 ... 4</div>
+                        </td>
+                    </tr>
 
-                <!--                Submit button-->
-                <button type="submit" onclick="sendPostRequest()">SUBMIT</button>
+                    <!-- Submit button -->
+                    <tr>
+                        <td colspan="2">
+                            <button type="submit" onclick="sendPostRequest()">SUBMIT</button>
+                        </td>
+                    </tr>
+                </table>
             </form>
         </td>
 
