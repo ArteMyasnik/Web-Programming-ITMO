@@ -21,7 +21,7 @@
     </tr>
     <tr>
         <td id="aside-column">
-            <form>
+            <form id="coordinates-form">
                 <svg width="200px" height="300px" style="border: 1px solid #ccaa72;">
                     <!--                    Треугольник-->
                     <polygon points="100,150 180,150 100,70" fill="#2f1f42" stroke="#5f398d" stroke-width="2"/>
@@ -63,10 +63,10 @@
                     <!-- Coordinate X -->
                     <tr>
                         <td>
-                            <label for="coordinate_x">Coordinate X</label>
+                            <label for="coordinate-x">Coordinate X</label>
                         </td>
                         <td>
-                            <select id="coordinate_x" name="x" required>
+                            <select id="coordinate-x" name="x" required>
                                 <option value="" disabled selected>Select value</option>
                                 <option value="-5">-5</option>
                                 <option value="-4">-4</option>
@@ -78,17 +78,19 @@
                                 <option value="2">2</option>
                                 <option value="3">3</option>
                             </select>
+                            <div id="error-x" class="error-message"></div>
                         </td>
                     </tr>
 
                     <!-- Coordinate Y -->
                     <tr>
                         <td>
-                            <label for="coordinate_y">Coordinate Y</label>
+                            <label for="coordinate-y">Coordinate Y</label>
                         </td>
                         <td>
-                            <input type="text" id="coordinate_y" name="y" placeholder="From -3 to 3" required>
+                            <input type="text" id="coordinate-y" name="y" placeholder="From -3 to 3" required>
                             <div class="range-hint">Range: -3 ... 3</div>
+                            <div id="error-y" class="error-message"></div>
                         </td>
                     </tr>
 
@@ -100,13 +102,14 @@
                         <td>
                             <input type="text" id="radius" name="radius" placeholder="From 1 to 4" required>
                             <div class="range-hint">Range: 1 ... 4</div>
+                            <div id="error-r" class="error-message"></div>
                         </td>
                     </tr>
 
                     <!-- Submit button -->
                     <tr>
                         <td colspan="2">
-                            <button type="submit" onclick="sendPostRequest()">SUBMIT</button>
+                            <button type="submit">SUBMIT</button>
                         </td>
                     </tr>
                 </table>

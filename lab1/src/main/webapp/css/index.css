@@ -207,3 +207,12 @@ button[type="submit"]:active {
 .required {
     color: #ff6b6b;
 }
+
+/* Сообщения об ошибках */
+.error-message {
+    height: 18px;
+    font-size: 12px;
+    margin-top: 4px;
+    font-family: "Roboto Light", sans-serif;
+    font-weight: bold;
+}
