@@ -8,12 +8,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
+    private static final Map<String, List<ResultData>> userSessions = new ConcurrentHashMap<>();
+
     public static void main(String[] args) {
         FCGIInterface fcgi = new FCGIInterface();
 
@@ -37,6 +37,14 @@ public class Server {
                 String body = readBody(contentLength);
                 Map<String, String> params = parseJson(body);
 
+                String sessionId = getSessionId(params);
+
+                // Загрузка историю, если впервые запрашивается
+                if (params.get("action").equalsIgnoreCase("get_history")) {
+                    sendSessionHistory(sessionId);
+                    continue;
+                }
+
                 // Получаем параметры
                 if (!params.containsKey("x") || !params.containsKey("y") || !params.containsKey("r")) {
                     sendErrorResponse(400, "Missing parameters: x, y, r");
@@ -51,7 +59,7 @@ public class Server {
                 // Валидация данные
                 ValidationResult validationResult = validateParameters(xStr, yStr, rStr);
                 if (!validationResult.isValid()) {
-                    sendErrorResponse(400, validationResult.getError());
+                    sendErrorResponse(400, validationResult.error());
                     continue;
                 }
 
@@ -65,14 +73,63 @@ public class Server {
                 // Записываем время работы в микросекундах
                 long workTime = (System.nanoTime() - startTime) / 1000;
 
+                // Создаем объект результата и сохраняем его в сессии
+                ResultData resultData = new ResultData(x, y, r, hit,
+                        DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()),
+                        workTime);
+                addToSession(sessionId, resultData);
 
                 // Отправляем ответ
-                sendResult(x, y, r, hit, workTime);
+                sendResult(x, y, r, hit, workTime, sessionId);
 
             } catch (Exception e) {
                 sendErrorResponse(500, "Internal server error");
             }
         }
+    }
+
+    private static void sendSessionHistory(String sessionId) {
+        List<ResultData> sessionResults = getSessionResults(sessionId);
+        StringBuilder jsonResultsBuilder = new StringBuilder();
+        for (int i = 0; i < sessionResults.size(); i++) {
+            ResultData result = sessionResults.get(i);
+            if (i > 0) jsonResultsBuilder.append(",");
+            jsonResultsBuilder.append(String.format(Locale.US,
+                    "{\"x\":%.1f,\"y\":%.1f,\"r\":%.1f,\"hit\":%s,\"current_time\":\"%s\",\"execution_time\":%d}",
+                    result.x(), result.y(), result.r(), result.hit(),
+                    result.currentTime(), result.executionTime()));
+        }
+        jsonResultsBuilder.append("]}");
+        sendResponse(200, jsonResultsBuilder.toString());
+    }
+
+    private static String generateSessionId() {
+        return UUID.randomUUID().toString();
+    }
+
+    private static String getSessionId(Map<String, String> params) {
+        String sessionId = params.get("session_id");
+        if (sessionId == null || sessionId.trim().isEmpty()) {
+            return generateSessionId();
+        }
+        return sessionId;
+    }
+
+    private static void addToSession(String sessionId, ResultData result) {
+        userSessions.compute(sessionId, (key, results) -> {
+            if (results == null) {
+                results = new ArrayList<>();
+            }
+            results.add(0, result);
+            if (results.size() > 50) {
+                results = results.subList(0, 50);
+            }
+            return results;
+        });
+    }
+
+    private static List<ResultData> getSessionResults(String sessionId) {
+        return userSessions.getOrDefault(sessionId, new ArrayList<>());
     }
 
     private static void sendErrorResponse(int status, String errorMessage) {
@@ -180,10 +237,10 @@ public class Server {
         return triangle || rectangle || circle;
     }
 
-    private static void sendResult(double x, double y, double r, boolean hit, long workTime) {
+    private static void sendResult(double x, double y, double r, boolean hit, long workTime, String sessionId) {
         String json = String.format(Locale.US,
-                "{\"x\":%.1f,\"y\":%.1f,\"r\":%.1f,\"hit\":%s,\"current_time\":\"%s\",\"execution_time\":%d}",
-                x, y, r, hit, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()), workTime);
+                "{\"x\":%.1f,\"y\":%.1f,\"r\":%.1f,\"hit\":%s,\"current_time\":\"%s\",\"execution_time\":%d,\\\"session_id\\\":\\\"%s\\\"}\"",
+                x, y, r, hit, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()), workTime, sessionId);
         sendResponse(200, json);
     }
 
@@ -212,16 +269,9 @@ public class Server {
         };
     }
 
-    private static class ValidationResult {
-        private final boolean isValid;
-        private final String error;
+    private record ValidationResult(boolean isValid, String error) {
+    }
 
-        ValidationResult(boolean isValid, String error) {
-            this.isValid = isValid;
-            this.error = error;
-        }
-
-        boolean isValid() { return isValid; }
-        String getError() { return error; }
+    private record ResultData(double x, double y, double r, boolean hit, String currentTime, long executionTime) {
     }
 }

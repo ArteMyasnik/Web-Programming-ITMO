@@ -1,4 +1,5 @@
 const SERVER_ENDPOINT = "/fcgi-bin/FCGIServer-1.0-SNAPSHOT-jar-with-dependencies.jar";
+let currentSessionId = null;
 
 // Сообщения об ошибках
 function showError(errorId, message) {
@@ -97,7 +98,8 @@ function sendData(x, y, r) {
     const data = {
         x: x,
         y: parseInt(y),
-        r: parseInt(r)
+        r: parseInt(r),
+        sessionId: currentSessionId
     };
 
     const startTime = performance.now();
@@ -116,6 +118,9 @@ function sendData(x, y, r) {
             return response.json();
         })
         .then(result => {
+            if (result.session_id) {
+                currentSessionId = result.session_id;
+            }
             const endTime = performance.now();
             const executionTime = (endTime - startTime).toFixed(2);
 
@@ -180,11 +185,55 @@ function saveToStorage(result) {
 }
 
 function loadFromStorage() {
-    const results = JSON.parse(localStorage.getItem("pointResults") || "[]");
-    results.forEach((result) => {
-        if (result.x !== undefined && result.y !== undefined && result.r !== undefined) {
-            addResultToTable(result.x, result.y, result.r, result.hit,
-                result.current_time || result.currentTime, result.execution_time || result.executionTime);
-        }
-    });
+    currentSessionId = sessionStorage.getItem('session_id');
+
+    if (currentSessionId) {
+        loadSessionHistory();
+    } else {
+        const results = JSON.parse(localStorage.getItem("pointResults") || "[]");
+        results.forEach((result) => {
+            if (result.x !== undefined && result.y !== undefined && result.r !== undefined) {
+                addResultToTable(result.x, result.y, result.r, result.hit,
+                    result.current_time || result.currentTime, result.execution_time || result.executionTime);
+            }
+        });
+    }
+}
+
+// Загрузка истории из действующей сессии
+function loadSessionHistory() {
+    if (!currentSessionId) return;
+
+    fetch(SERVER_ENDPOINT, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            action: 'get_history',
+            session_id: currentSessionId
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Очищаем таблицу
+            const table = document.getElementById('results-table');
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            // Добавляем результаты из сессии
+            if (data.history) {
+                data.history.forEach(result => {
+                    addResultToTable(
+                        result.x, result.y, result.r,
+                        result.hit, result.current_time,
+                        result.execution_time
+                    );
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading session history:', error);
+        });
 }
