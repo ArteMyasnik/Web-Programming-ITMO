@@ -1,4 +1,4 @@
-const SERVER_ENDPOINT = "/fcgi-bin/FCGIServer-1.0-SNAPSHOT-jar-with-dependencies.jar";
+const SERVER_ENDPOINT = "/fcgi-bin/FastCGIServer-1.0-SNAPSHOT-jar-with-dependencies.jar";
 let currentSessionId = null;
 
 // Сообщения об ошибках
@@ -98,9 +98,12 @@ function sendData(x, y, r) {
     const data = {
         x: x,
         y: parseInt(y),
-        r: parseInt(r),
-        sessionId: currentSessionId
+        r: parseInt(r)
     };
+
+    if (currentSessionId) {
+        data.session_id = currentSessionId;
+    }
 
     const startTime = performance.now();
 
@@ -120,6 +123,8 @@ function sendData(x, y, r) {
         .then(result => {
             if (result.session_id) {
                 currentSessionId = result.session_id;
+                sessionStorage.setItem('session_id', currentSessionId);
+                migrateLocalStorageToSession();
             }
             const endTime = performance.now();
             const executionTime = (endTime - startTime).toFixed(2);
@@ -131,7 +136,7 @@ function sendData(x, y, r) {
             addResultToTable(result.x || x, result.y || y, result.r || r, result.hit,
                 result.current_time || result.currentTime, serverExecutionTime);
 
-            saveToStorage(result);
+            saveToSessionStorage(result);
 
             // Сброс ошибок
             hideError("error-x");
@@ -142,6 +147,17 @@ function sendData(x, y, r) {
             console.error('Error:', error);
             showError("error-x", error.message);
         });
+}
+
+function migrateLocalStorageToSession() {
+    const localResults = JSON.parse(localStorage.getItem("pointResults") || "[]");
+    if (localResults.length > 0) {
+        localStorage.removeItem("pointResults");
+        localResults.forEach(result => {
+            saveToSessionStorage(result);
+        });
+        console.log(`Migrated ${localResults.length} results from localStorage to session`);
+    }
 }
 
 // Добавление результата в таблицу
@@ -166,7 +182,7 @@ function addResultToTable(x, y, r, hit, currentTime, executionTime) {
         <td>${executionTime} ms</td>
     `;
 
-    // Добавление строки в начало таблицы (после заголовков)
+    // Добавление строки в начало таблицы
     if (table.rows.length > 1) {
         table.insertBefore(newRow, table.rows[1]);
     } else {
@@ -174,14 +190,13 @@ function addResultToTable(x, y, r, hit, currentTime, executionTime) {
     }
 }
 
-function saveToStorage(result) {
-    let results = JSON.parse(localStorage.getItem("pointResults") || "[]");
-    results.unshift(result); // Добавляем в начало
-    // Ограничиваем количество сохраняемых результатов
+function saveToSessionStorage(result) {
+    let results = JSON.parse(sessionStorage.getItem("sessionResults") || "[]");
+    results.unshift(result);
     if (results.length > 50) {
         results = results.slice(0, 50);
     }
-    localStorage.setItem("pointResults", JSON.stringify(results));
+    sessionStorage.setItem("sessionResults", JSON.stringify(results));
 }
 
 function loadFromStorage() {
@@ -190,13 +205,27 @@ function loadFromStorage() {
     if (currentSessionId) {
         loadSessionHistory();
     } else {
-        const results = JSON.parse(localStorage.getItem("pointResults") || "[]");
-        results.forEach((result) => {
-            if (result.x !== undefined && result.y !== undefined && result.r !== undefined) {
-                addResultToTable(result.x, result.y, result.r, result.hit,
-                    result.current_time || result.currentTime, result.execution_time || result.executionTime);
-            }
-        });
+        const localResults = JSON.parse(localStorage.getItem("pointResults") || "[]");
+        const sessionResults = JSON.parse(sessionStorage.getItem("sessionResults") || "[]");
+
+        if (sessionResults.length > 0) {
+            sessionResults.forEach((result) => {
+                if (result.x !== undefined && result.y !== undefined && result.r !== undefined) {
+                    addResultToTable(result.x, result.y, result.r, result.hit,
+                        result.current_time || result.currentTime,
+                        result.execution_time || result.executionTime);
+                }
+            });
+        }
+        else if (localResults.length > 0) {
+            localResults.forEach((result) => {
+                if (result.x !== undefined && result.y !== undefined && result.r !== undefined) {
+                    addResultToTable(result.x, result.y, result.r, result.hit,
+                        result.current_time || result.currentTime,
+                        result.execution_time || result.executionTime);
+                }
+            });
+        }
     }
 }
 

@@ -27,11 +27,15 @@ public class Server {
                 long startTime = System.nanoTime();
                 String method = prop("REQUEST_METHOD", "");
 
-                if (!"POST".equals(method)) { sendErrorResponse(405, "Only POST method is supported"); }
+                if (!"POST".equals(method)) {
+                    sendErrorResponse(405, "Only POST method is supported");
+                    continue;
+                }
 
                 int contentLength = parseLengthSafe(prop("CONTENT_LENGTH", "0"), 0);
                 if (contentLength <= 0) {
                     sendErrorResponse(400, "Empty body request");
+                    continue;
                 }
 
                 String body = readBody(contentLength);
@@ -40,7 +44,8 @@ public class Server {
                 String sessionId = getSessionId(params);
 
                 // Загрузка историю, если впервые запрашивается
-                if (params.get("action").equalsIgnoreCase("get_history")) {
+                String action = params.get("action");
+                if (action != null && "get_history".equalsIgnoreCase(action)) {
                     sendSessionHistory(sessionId);
                     continue;
                 }
@@ -91,6 +96,7 @@ public class Server {
     private static void sendSessionHistory(String sessionId) {
         List<ResultData> sessionResults = getSessionResults(sessionId);
         StringBuilder jsonResultsBuilder = new StringBuilder();
+        jsonResultsBuilder.append("{\"session_id\":\"").append(sessionId).append("\",\"history\":[");
         for (int i = 0; i < sessionResults.size(); i++) {
             ResultData result = sessionResults.get(i);
             if (i > 0) jsonResultsBuilder.append(",");
@@ -239,8 +245,10 @@ public class Server {
 
     private static void sendResult(double x, double y, double r, boolean hit, long workTime, String sessionId) {
         String json = String.format(Locale.US,
-                "{\"x\":%.1f,\"y\":%.1f,\"r\":%.1f,\"hit\":%s,\"current_time\":\"%s\",\"execution_time\":%d,\\\"session_id\\\":\\\"%s\\\"}\"",
-                x, y, r, hit, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()), workTime, sessionId);
+                "{\"x\":%.1f,\"y\":%.1f,\"r\":%.1f,\"hit\":%s,\"current_time\":\"%s\",\"execution_time\":%d,\"session_id\":\"%s\"}",
+                x, y, r, hit,
+                DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(LocalDateTime.now()),
+                workTime, sessionId);
         sendResponse(200, json);
     }
 
