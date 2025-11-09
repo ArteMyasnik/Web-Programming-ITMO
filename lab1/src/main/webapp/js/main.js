@@ -14,6 +14,8 @@ function hideError(errorId) {
     document.getElementById(errorId).innerHTML = "";
 }
 
+
+
 // Валидация и отправка данных на сервер
 document.addEventListener('DOMContentLoaded', function() {
     // Загрузка истории из localStorage
