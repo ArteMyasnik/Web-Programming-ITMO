@@ -43,7 +43,7 @@ body {
     box-sizing: border-box;
 }
 
-/* Колонки основного контента */
+/* Колонки основного контенту */
 #aside-column, #main-column {
     border: 5px solid #ccaa72;
     font-size: 20px;
@@ -55,6 +55,24 @@ body {
 /* Левая колонка с формой */
 #aside-column {
     width: 30%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+/* График SVG */
+#aside-column svg {
+    width: 250px;
+    height: 350px;
+    border: 1px solid #ccaa72;
+    flex-shrink: 0;
+}
+
+/* Форма ввода */
+#aside-column form {
+    flex: 1;
+    min-width: 0;
 }
 
 /* Правая колонка с результатами */
@@ -128,7 +146,7 @@ body {
 /* Таблица формы ввода */
 .form-table {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 .form-row {
