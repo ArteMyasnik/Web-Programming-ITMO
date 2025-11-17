@@ -29,4 +29,9 @@
         <url-pattern>/area-check</url-pattern>
     </servlet-mapping>
 
+    <!--  Servlet Context session timeout  -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
 </web-app>
