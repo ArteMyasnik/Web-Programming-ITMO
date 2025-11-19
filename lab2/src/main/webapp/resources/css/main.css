@@ -521,3 +521,19 @@ button[type="submit"]:active {
 .results-body::-webkit-scrollbar-thumb:hover {
     background: #ccaa72;
 }
+
+/* Контейнер для графика и формы */
+.form-content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* Контейнер полей ввода */
+.fields-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}

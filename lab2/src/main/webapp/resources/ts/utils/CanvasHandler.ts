@@ -52,14 +52,15 @@ class CanvasHandler {
         const clickX = event.clientX - rect.left;
         const clickY = event.clientY - rect.top;
 
+        // Конвертация в графические координаты
         const graphX = (clickX - this.CENTER_X) / scale;
         const graphY = (this.CENTER_Y - clickY) / scale;
 
-        const roundedX = Math.round(graphX * 100) / 100;
-        const roundedY = Math.round(graphY * 100) / 100;
+        // Сохраняем точку куда нажал (для отображения после ответа сервера)
+        this.lastClickedPoint = { x: graphX, y: graphY };
 
         // Отправляем данные через существующую форму
-        this.submitPointToServer(roundedX, roundedY, this.currentR);
+        this.submitPointToServer(graphX, graphY, this.currentR);
     }
 
     private submitPointToServer(x: number, y: number, r: number): void {
@@ -130,12 +131,23 @@ class CanvasHandler {
         }
     }
 
+    // ФИКС: Добавляем точку с координатами куда нажал, а не из формы
     public addResultPoint(x: number, y: number, hit: boolean): void {
-        this.points.push({ x, y, hit });
+        // Используем последние координаты клика или переданные координаты
+        const pointToAdd = this.lastClickedPoint ? 
+            { ...this.lastClickedPoint, hit } : 
+            { x, y, hit };
+            
+        this.points.push(pointToAdd);
         if (this.currentR) {
-            this.drawPoint(x, y, hit);
+            this.drawPoint(pointToAdd.x, pointToAdd.y, hit);
         }
+        
+        // Сбрасываем последнюю точку клика
+        this.lastClickedPoint = null;
     }
+
+    private lastClickedPoint: { x: number; y: number } | null = null;
 }
 
 export { CanvasHandler };
