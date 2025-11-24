@@ -1,29 +1,27 @@
-import { ErrorHandler } from "./ErrorHandler";
 class CanvasHandler {
-    constructor() {
+    constructor(errorHandler) {
         this.canvas = null;
         this.ctx = null;
         this.points = [];
         this.currentR = null;
-        this.CANVAS_WIDTH = 200;
-        this.CANVAS_HEIGHT = 300;
-        this.CENTER_X = 100;
-        this.CENTER_Y = 150;
-        this.GRAPH_SIZE = 160;
+        this.CANVAS_WIDTH = 200 * 2;
+        this.CANVAS_HEIGHT = 300 * 2;
+        this.CENTER_X = 100 * 2;
+        this.CENTER_Y = 150 * 2;
+        this.GRAPH_SIZE = 160 * 2;
         this.MAX_R = 3;
-        this.errorHandler = new ErrorHandler();
-        this.initializeCanvas();
+        this.initializeCanvas(errorHandler);
     }
-    initializeCanvas() {
+    initializeCanvas(errorHandler) {
         this.canvas = document.getElementById('area-canvas');
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
-            this.setupEventListeners();
+            this.setupEventListeners(errorHandler);
         }
     }
-    setupEventListeners() {
+    setupEventListeners(errorHandler) {
         var _a;
-        (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.addEventListener('click', (event) => this.handleCanvasClick(event));
+        (_a = this.canvas) === null || _a === void 0 ? void 0 : _a.addEventListener('click', (event) => this.handleCanvasClick(event, errorHandler));
     }
     setCurrentR(r) {
         this.currentR = r;
@@ -37,10 +35,10 @@ class CanvasHandler {
         }
         return color;
     }
-    handleCanvasClick(event) {
+    handleCanvasClick(event, errorHandler) {
         if (!this.canvas || !this.currentR) {
             if (!this.currentR) {
-                this.errorHandler.showError("error-r", "Please select radius R first!");
+                errorHandler.showError("error-r", "Please select radius R first!");
             }
             return;
         }

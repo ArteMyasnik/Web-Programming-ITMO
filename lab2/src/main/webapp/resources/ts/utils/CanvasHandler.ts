@@ -11,30 +11,28 @@ class CanvasHandler {
     private ctx: CanvasRenderingContext2D | null = null;
     private points: CanvasPoint[] = [];
     private currentR: number | null = null;
-    private errorHandler: ErrorHandler;
 
-    private readonly CANVAS_WIDTH = 200;
-    private readonly CANVAS_HEIGHT = 300;
-    private readonly CENTER_X = 100;
-    private readonly CENTER_Y = 150;
-    private readonly GRAPH_SIZE = 160;
+    private readonly CANVAS_WIDTH = 200 * 2;
+    private readonly CANVAS_HEIGHT = 300 * 2;
+    private readonly CENTER_X = 100 * 2;
+    private readonly CENTER_Y = 150 * 2;
+    private readonly GRAPH_SIZE = 160 * 2;
     private readonly MAX_R = 3;
 
-    constructor() {
-        this.errorHandler = new ErrorHandler();
-        this.initializeCanvas();
+    constructor(errorHandler: ErrorHandler) {
+        this.initializeCanvas(errorHandler);
     }
 
-    private initializeCanvas(): void {
+    private initializeCanvas(errorHandler: ErrorHandler): void {
         this.canvas = document.getElementById('area-canvas') as HTMLCanvasElement;
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
-            this.setupEventListeners();
+            this.setupEventListeners(errorHandler);
         }
     }
 
-    private setupEventListeners(): void {
-        this.canvas?.addEventListener('click', (event) => this.handleCanvasClick(event));
+    private setupEventListeners(errorHandler: ErrorHandler): void {
+        this.canvas?.addEventListener('click', (event) => this.handleCanvasClick(event, errorHandler));
     }
 
     public setCurrentR(r: number | null): void {
@@ -51,10 +49,10 @@ class CanvasHandler {
         return color;
     }
 
-    private handleCanvasClick(event: MouseEvent): void {
+    private handleCanvasClick(event: MouseEvent, errorHandler: ErrorHandler): void {
         if (!this.canvas || !this.currentR) {
             if (!this.currentR) {
-                this.errorHandler.showError("error-r", "Please select radius R first!");
+                errorHandler.showError("error-r", "Please select radius R first!");
             }
             return;
         }

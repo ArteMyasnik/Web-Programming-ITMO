@@ -13,7 +13,7 @@ class MainApplication {
         this.domHandler = new DOMHandler();
         this.errorHandler = new ErrorHandler();
         this.validator = new Validator();
-        this.canvasHandler = new CanvasHandler();
+        this.canvasHandler = new CanvasHandler(this.errorHandler);
 
         this.initializeEventListeners();
         this.initializeResultPoints();

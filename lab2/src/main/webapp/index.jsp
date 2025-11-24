@@ -24,42 +24,42 @@
     <div id="content-section">
         <div id="aside-column">
             <form id="coordinates-form" action="controller" method="post">
-                <div style="position: relative; width: 200px; height: 300px;">
-                    <svg width="200px" height="300px" style="border: 1px solid #ccaa72;">
+                <div style="position: relative; width: 400px; height: 600px;">
+                    <svg width="400px" height="600px" style="border: 1px solid #ccaa72;">
                         <!-- Треугольник -->
-                        <polygon points="100,150 140,150 100,190" fill="#2f1f42" stroke="#5f398d" stroke-width="2"/>
+                        <polygon points="200,300 280,300 200,380" fill="#2f1f42" stroke="#5f398d" stroke-width="4"/>
 
                         <!-- Прямоугольник -->
-                        <rect x="60" y="70" width="40" height="80" fill="#2f1f42" stroke="#5f398d" stroke-width="2"/>
+                        <rect x="120" y="140" width="80" height="160" fill="#2f1f42" stroke="#5f398d" stroke-width="4"/>
 
                         <!-- Четверть круга -->
-                        <path d="M100,150 L100,70 A80,80 0 0,1 180,150 L100,150 Z" fill="#2f1f42" stroke="#5f398d" stroke-width="2"></path>
+                        <path d="M200,300 L200,140 A160,160 0 0,1 360,300 L200,300 Z" fill="#2f1f42" stroke="#5f398d" stroke-width="4"></path>
 
                         <!-- Arrow OY -->
-                        <line x1="100px" y1="20px" x2="100px" y2="280px" stroke-width="2" stroke="#ccaa72"/>
-                        <line x1="100px" y1="20px" x2="105px" y2="25px" stroke-width="2" stroke="#ccaa72"/>
-                        <line x1="100px" y1="20px" x2="95px" y2="25px" stroke-width="2" stroke="#ccaa72"/>
-                        <text x="105px" y="25px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">Y</text>
+                        <line x1="200px" y1="40px" x2="200px" y2="560px" stroke-width="4" stroke="#ccaa72"/>
+                        <line x1="200px" y1="40px" x2="210px" y2="50px" stroke-width="4" stroke="#ccaa72"/>
+                        <line x1="200px" y1="40px" x2="190px" y2="50px" stroke-width="4" stroke="#ccaa72"/>
+                        <text x="210px" y="50px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">Y</text>
 
                         <!-- Arrow OX -->
-                        <line x1="10px" y1="150px" x2="195px" y2="150px" stroke-width="2" stroke="#ccaa72"/>
-                        <line x1="190px" y1="145px" x2="195px" y2="150px" stroke-width="2" stroke="#ccaa72"/>
-                        <line x1="190px" y1="155px" x2="195px" y2="150px" stroke-width="2" stroke="#ccaa72"/>
-                        <text x="190px" y="140px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">X</text>
+                        <line x1="20px" y1="300px" x2="390px" y2="300px" stroke-width="4" stroke="#ccaa72"/>
+                        <line x1="380px" y1="290px" x2="390px" y2="300px" stroke-width="4" stroke="#ccaa72"/>
+                        <line x1="380px" y1="310px" x2="390px" y2="300px" stroke-width="4" stroke="#ccaa72"/>
+                        <text x="380px" y="280px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">X</text>
 
                         <!-- Radius -->
-                        <text x="20px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R</text>
-                        <text x="60px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R/2</text>
-                        <text x="140px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R/2</text>
-                        <text x="180px" y="147px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R</text>
+                        <text x="40px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R</text>
+                        <text x="120px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R/2</text>
+                        <text x="280px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R/2</text>
+                        <text x="360px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R</text>
 
-                        <text x="102px" y="70px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R</text>
-                        <text x="102px" y="110px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">R/2</text>
-                        <text x="102px" y="190px" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R/2</text>
-                        <text x="102px" y="230" font-family="Roboto Light monospace;" font-size="12" fill="#ccaa72">-R</text>
+                        <text x="204px" y="140px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R</text>
+                        <text x="204px" y="220px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R/2</text>
+                        <text x="204px" y="380px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R/2</text>
+                        <text x="204px" y="460px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R</text>
                     </svg>
 
-                    <canvas id="area-canvas" width="200" height="300"
+                    <canvas id="area-canvas" width="400" height="600"
                             style="position: absolute; z-index: 2; cursor: pointer; background: transparent;"></canvas>
                 </div>
                 <br>
@@ -138,7 +138,6 @@
                 <div class="results-body">
                     <!-- Results history from context -->
                     <c:if test="${not empty resultsHistory}">
-                        <p>Количество элементов: ${fn:length(resultsHistory)}</p>
                         <c:forEach var="result" items="${resultsHistory}">
                             <div class="result-row">
                                 <div class="result-cell">${result.x}</div>
