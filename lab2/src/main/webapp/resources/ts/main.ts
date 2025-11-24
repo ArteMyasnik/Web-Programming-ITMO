@@ -56,15 +56,17 @@ class MainApplication {
     }
 
     private initializeEventListeners(): void {
-        this.domHandler.addFormSubmitListener((e) => this.handleFormSubmit(e));
         this.domHandler.addYInputListener((e) => this.handleYInput(e));
         this.domHandler.addXChangeListener(() => this.hideError('error-x'));
         this.domHandler.addRadiusChangeListener(() => this.handleRadiusChange());
+        this.domHandler.getForm()?.reset();
+        this.domHandler.addFormSubmitListener((e) => this.handleFormSubmit(e));
     }
 
     private handleFormSubmit(event: Event): void {
         event.preventDefault();
         const formValues = this.domHandler.getFormValues();
+        console.log("formValues", formValues)
         const validations = this.validator.validateAllFields(formValues.x, formValues.y, formValues.r);
 
         if (this.handleValidationResults(validations)) {

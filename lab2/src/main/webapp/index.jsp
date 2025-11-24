@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -135,20 +136,9 @@
                     <div class="result-header-cell">Script execution time</div>
                 </div>
                 <div class="results-body">
-                    <!-- Current result -->
-                    <c:if test="${not empty x}">
-                        <div class="result-row">
-                            <div class="result-cell">${x}</div>
-                            <div class="result-cell">${y}</div>
-                            <div class="result-cell">${r}</div>
-                            <div class="result-cell">${isHit ? 'Yes' : 'No'}</div>
-                            <div class="result-cell">${currentTime}</div>
-                            <div class="result-cell">${executionTime} µs</div>
-                        </div>
-                    </c:if>
-
                     <!-- Results history from context -->
                     <c:if test="${not empty resultsHistory}">
+                        <p>Количество элементов: ${fn:length(resultsHistory)}</p>
                         <c:forEach var="result" items="${resultsHistory}">
                             <div class="result-row">
                                 <div class="result-cell">${result.x}</div>
@@ -165,6 +155,11 @@
         </div>
     </div>
 </div>
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href)
+    }
+</script>
 <script src="${pageContext.request.contextPath}/resources/js/bundle.js"></script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+import { ErrorHandler } from "./ErrorHandler";
 class CanvasHandler {
     constructor() {
         this.canvas = null;
@@ -10,6 +11,7 @@ class CanvasHandler {
         this.CENTER_Y = 150;
         this.GRAPH_SIZE = 160;
         this.MAX_R = 3;
+        this.errorHandler = new ErrorHandler();
         this.initializeCanvas();
     }
     initializeCanvas() {
@@ -27,10 +29,18 @@ class CanvasHandler {
         this.currentR = r;
         this.redrawPoints();
     }
+    getRandomColor() {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
     handleCanvasClick(event) {
         if (!this.canvas || !this.currentR) {
             if (!this.currentR) {
-                alert('Please select radius R first!');
+                this.errorHandler.showError("error-r", "Please select radius R first!");
             }
             return;
         }
@@ -40,35 +50,35 @@ class CanvasHandler {
         const clickY = event.clientY - rect.top;
         const graphX = (clickX - this.CENTER_X) / scale;
         const graphY = (this.CENTER_Y - clickY) / scale;
-        const roundedX = Math.round(graphX * 100) / 100;
-        const roundedY = Math.round(graphY * 100) / 100;
-        // Отправляем данные через существующую форму
-        this.submitPointToServer(roundedX, roundedY, this.currentR);
+        console.log("handle canvas click", graphX, graphY);
+        this.submitPointToServer(graphX, graphY, this.currentR);
     }
     submitPointToServer(x, y, r) {
-        // Находим существующую форму
-        const form = document.getElementById('coordinates-form');
-        if (!form)
-            return;
-        // Устанавливаем значения в форму
-        const xInput = document.getElementById('coordinate-x');
-        const yInput = document.getElementById('coordinate-y');
-        if (xInput && yInput) {
-            // Находим ближайшее доступное значение X
-            const availableX = Array.from(xInput.options)
-                .map(opt => parseFloat(opt.value))
-                .filter(val => !isNaN(val));
-            const closestX = availableX.reduce((prev, curr) => Math.abs(curr - x) < Math.abs(prev - x) ? curr : prev);
-            xInput.value = closestX.toString();
-            yInput.value = y.toString();
-            // Устанавливаем радиус
-            const rRadio = document.querySelector(`input[name="radius"][value="${r}"]`);
-            if (rRadio) {
-                rRadio.checked = true;
-            }
-            // Отправляем форму
-            form.submit();
-        }
+        // Создаем скрытую форму для точных координат
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'post';
+        hiddenForm.action = 'controller';
+        hiddenForm.style.display = 'none';
+        // Скрытое поле для точного X
+        const hiddenX = document.createElement('input');
+        hiddenX.type = 'hidden';
+        hiddenX.name = 'x';
+        hiddenX.value = parseFloat(x.toFixed(2)).toString();
+        hiddenForm.appendChild(hiddenX);
+        // Скрытое поле для точного Y
+        const hiddenY = document.createElement('input');
+        hiddenY.type = 'hidden';
+        hiddenY.name = 'y';
+        hiddenY.value = parseFloat(y.toFixed(2)).toString();
+        hiddenForm.appendChild(hiddenY);
+        // Скрытое поле для радиуса
+        const hiddenR = document.createElement('input');
+        hiddenR.type = 'hidden';
+        hiddenR.name = 'radius';
+        hiddenR.value = r.toString();
+        hiddenForm.appendChild(hiddenR);
+        document.body.appendChild(hiddenForm);
+        hiddenForm.submit();
     }
     drawPoint(x, y, hit) {
         if (!this.ctx || !this.currentR)
@@ -76,13 +86,20 @@ class CanvasHandler {
         const scale = this.GRAPH_SIZE / (this.MAX_R * 2);
         const canvasX = this.CENTER_X + x * scale;
         const canvasY = this.CENTER_Y - y * scale;
+        console.log("draw point", x, y, hit);
         this.ctx.beginPath();
         this.ctx.arc(canvasX, canvasY, 4, 0, 2 * Math.PI);
-        this.ctx.fillStyle = hit ? '#00ff00' : '#ff0000';
+        this.ctx.fillStyle = this.getRandomColor();
         this.ctx.fill();
         this.ctx.strokeStyle = '#ffffff';
         this.ctx.lineWidth = 1;
         this.ctx.stroke();
+    }
+    clearPoints() {
+        this.points = [];
+        if (this.ctx) {
+            this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+        }
     }
     redrawPoints() {
         if (!this.ctx)
@@ -94,17 +111,14 @@ class CanvasHandler {
             }
         });
     }
-    clearPoints() {
-        this.points = [];
-        if (this.ctx) {
-            this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
-        }
-    }
     addResultPoint(x, y, hit) {
-        this.points.push({ x, y, hit });
+        const pointToAdd = { x, y, hit };
+        console.log("pointToAdd", pointToAdd);
+        this.points.push(pointToAdd);
         if (this.currentR) {
-            this.drawPoint(x, y, hit);
+            this.drawPoint(pointToAdd.x, pointToAdd.y, hit);
         }
+        console.log("points", this.points);
     }
 }
 export { CanvasHandler };

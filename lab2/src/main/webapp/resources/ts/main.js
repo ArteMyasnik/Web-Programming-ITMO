@@ -44,15 +44,18 @@ class MainApplication {
         }
     }
     initializeEventListeners() {
-        this.domHandler.addFormSubmitListener((e) => this.handleFormSubmit(e));
+        var _a;
         this.domHandler.addYInputListener((e) => this.handleYInput(e));
         this.domHandler.addXChangeListener(() => this.hideError('error-x'));
         this.domHandler.addRadiusChangeListener(() => this.handleRadiusChange());
+        (_a = this.domHandler.getForm()) === null || _a === void 0 ? void 0 : _a.reset();
+        this.domHandler.addFormSubmitListener((e) => this.handleFormSubmit(e));
     }
     handleFormSubmit(event) {
         var _a;
         event.preventDefault();
         const formValues = this.domHandler.getFormValues();
+        console.log("formValues", formValues);
         const validations = this.validator.validateAllFields(formValues.x, formValues.y, formValues.r);
         if (this.handleValidationResults(validations)) {
             (_a = this.domHandler.getForm()) === null || _a === void 0 ? void 0 : _a.submit();

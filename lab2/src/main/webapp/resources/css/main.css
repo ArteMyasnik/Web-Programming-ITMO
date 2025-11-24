@@ -183,10 +183,6 @@ body {
     background: rgba(95, 57, 141, 0.2);
 }
 
-.result-row:last-child {
-    border-bottom: none;
-}
-
 /* Подсветка новой строки */
 .result-row:first-child {
     background: rgba(95, 57, 141, 0.3);
@@ -238,7 +234,7 @@ body {
     color: #4CAF50;
 }
 
-.result-cell:nth-child(4):contains("No") {
+.result-cell:nth-child(4)[data-hit="No"] {
     color: #f44336;
 }
 
@@ -438,70 +434,6 @@ button[type="submit"]:active {
     font-weight: bold;
     color: #ff6b6b;
     transition: opacity 0.3s ease;
-}
-
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-    #content-section {
-        flex-direction: column;
-        height: auto;
-    }
-
-    #aside-column, #main-column {
-        width: 100%;
-        min-width: auto;
-    }
-
-    #aside-column {
-        order: 2;
-    }
-
-    #main-column {
-        order: 1;
-    }
-
-    .form-row {
-        flex-direction: column;
-    }
-
-    .form-label {
-        width: 100%;
-        padding-right: 0;
-        margin-bottom: 8px;
-    }
-
-    .results-header, .result-row {
-        flex-wrap: wrap;
-    }
-
-    .result-header-cell, .result-cell {
-        flex: 1 1 50%;
-        min-width: 120px;
-    }
-}
-
-@media (max-width: 480px) {
-    #header-section {
-        height: auto;
-        min-height: 100px;
-        padding: 5px;
-    }
-
-    .group-variant {
-        font-size: 16px;
-    }
-
-    #aside-column, #main-column {
-        padding: 10px;
-    }
-
-    .radio-group {
-        justify-content: center;
-    }
-
-    .result-header-cell, .result-cell {
-        flex: 1 1 100%;
-    }
 }
 
 /* Стили для скроллбара */

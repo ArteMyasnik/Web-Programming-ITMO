@@ -1,3 +1,5 @@
+import {ErrorHandler} from "./ErrorHandler";
+
 type CanvasPoint = {
     x: number;
     y: number;
@@ -9,6 +11,7 @@ class CanvasHandler {
     private ctx: CanvasRenderingContext2D | null = null;
     private points: CanvasPoint[] = [];
     private currentR: number | null = null;
+    private errorHandler: ErrorHandler;
 
     private readonly CANVAS_WIDTH = 200;
     private readonly CANVAS_HEIGHT = 300;
@@ -18,6 +21,7 @@ class CanvasHandler {
     private readonly MAX_R = 3;
 
     constructor() {
+        this.errorHandler = new ErrorHandler();
         this.initializeCanvas();
     }
 
@@ -38,10 +42,19 @@ class CanvasHandler {
         this.redrawPoints();
     }
 
+    private getRandomColor(): string {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
     private handleCanvasClick(event: MouseEvent): void {
         if (!this.canvas || !this.currentR) {
             if (!this.currentR) {
-                alert('Please select radius R first!');
+                this.errorHandler.showError("error-r", "Please select radius R first!");
             }
             return;
         }
@@ -52,48 +65,44 @@ class CanvasHandler {
         const clickX = event.clientX - rect.left;
         const clickY = event.clientY - rect.top;
 
-        // Конвертация в графические координаты
         const graphX = (clickX - this.CENTER_X) / scale;
         const graphY = (this.CENTER_Y - clickY) / scale;
 
-        // Сохраняем точку куда нажал (для отображения после ответа сервера)
-        this.lastClickedPoint = { x: graphX, y: graphY };
+        console.log("handle canvas click", graphX, graphY);
 
-        // Отправляем данные через существующую форму
         this.submitPointToServer(graphX, graphY, this.currentR);
     }
 
     private submitPointToServer(x: number, y: number, r: number): void {
-        // Находим существующую форму
-        const form = document.getElementById('coordinates-form') as HTMLFormElement;
-        if (!form) return;
+        // Создаем скрытую форму для точных координат
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'post';
+        hiddenForm.action = 'controller';
+        hiddenForm.style.display = 'none';
 
-        // Устанавливаем значения в форму
-        const xInput = document.getElementById('coordinate-x') as HTMLSelectElement;
-        const yInput = document.getElementById('coordinate-y') as HTMLInputElement;
+        // Скрытое поле для точного X
+        const hiddenX = document.createElement('input');
+        hiddenX.type = 'hidden';
+        hiddenX.name = 'x';
+        hiddenX.value = parseFloat(x.toFixed(2)).toString();
+        hiddenForm.appendChild(hiddenX);
 
-        if (xInput && yInput) {
-            // Находим ближайшее доступное значение X
-            const availableX = Array.from(xInput.options)
-                .map(opt => parseFloat(opt.value))
-                .filter(val => !isNaN(val));
+        // Скрытое поле для точного Y
+        const hiddenY = document.createElement('input');
+        hiddenY.type = 'hidden';
+        hiddenY.name = 'y';
+        hiddenY.value = parseFloat(y.toFixed(2)).toString();
+        hiddenForm.appendChild(hiddenY);
 
-            const closestX = availableX.reduce((prev, curr) =>
-                Math.abs(curr - x) < Math.abs(prev - x) ? curr : prev
-            );
+        // Скрытое поле для радиуса
+        const hiddenR = document.createElement('input');
+        hiddenR.type = 'hidden';
+        hiddenR.name = 'radius';
+        hiddenR.value = r.toString();
+        hiddenForm.appendChild(hiddenR);
 
-            xInput.value = closestX.toString();
-            yInput.value = y.toString();
-
-            // Устанавливаем радиус
-            const rRadio = document.querySelector(`input[name="radius"][value="${r}"]`) as HTMLInputElement;
-            if (rRadio) {
-                rRadio.checked = true;
-            }
-
-            // Отправляем форму
-            form.submit();
-        }
+        document.body.appendChild(hiddenForm);
+        hiddenForm.submit();
     }
 
     private drawPoint(x: number, y: number, hit: boolean): void {
@@ -103,13 +112,22 @@ class CanvasHandler {
         const canvasX = this.CENTER_X + x * scale;
         const canvasY = this.CENTER_Y - y * scale;
 
+        console.log("draw point", x, y, hit);
+
         this.ctx.beginPath();
         this.ctx.arc(canvasX, canvasY, 4, 0, 2 * Math.PI);
-        this.ctx.fillStyle = hit ? '#00ff00' : '#ff0000';
+        this.ctx.fillStyle = this.getRandomColor();
         this.ctx.fill();
         this.ctx.strokeStyle = '#ffffff';
         this.ctx.lineWidth = 1;
         this.ctx.stroke();
+    }
+
+    public clearPoints(): void {
+        this.points = [];
+        if (this.ctx) {
+            this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+        }
     }
 
     private redrawPoints(): void {
@@ -124,30 +142,17 @@ class CanvasHandler {
         });
     }
 
-    public clearPoints(): void {
-        this.points = [];
-        if (this.ctx) {
-            this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
-        }
-    }
-
-    // ФИКС: Добавляем точку с координатами куда нажал, а не из формы
     public addResultPoint(x: number, y: number, hit: boolean): void {
-        // Используем последние координаты клика или переданные координаты
-        const pointToAdd = this.lastClickedPoint ? 
-            { ...this.lastClickedPoint, hit } : 
-            { x, y, hit };
-            
+        const pointToAdd = { x, y, hit };
+
+        console.log("pointToAdd", pointToAdd);
+
         this.points.push(pointToAdd);
         if (this.currentR) {
             this.drawPoint(pointToAdd.x, pointToAdd.y, hit);
         }
-        
-        // Сбрасываем последнюю точку клика
-        this.lastClickedPoint = null;
+        console.log("points", this.points)
     }
-
-    private lastClickedPoint: { x: number; y: number } | null = null;
 }
 
 export { CanvasHandler };
