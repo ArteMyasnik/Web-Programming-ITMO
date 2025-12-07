@@ -2,18 +2,21 @@ import {DOMHandler} from "./utils/DOMHandler";
 import {ErrorHandler} from "./utils/ErrorHandler";
 import {FieldValidator, Validator} from "./utils/Validation";
 import {CanvasHandler} from "./utils/CanvasHandler";
+import {SVGHandler} from "./utils/SVGHandler";
 
 class MainApplication {
     private domHandler: DOMHandler;
     private errorHandler: ErrorHandler;
     private validator: Validator;
     private canvasHandler: CanvasHandler;
+    private svgHandler: SVGHandler;
 
     constructor() {
         this.domHandler = new DOMHandler();
         this.errorHandler = new ErrorHandler();
         this.validator = new Validator();
         this.canvasHandler = new CanvasHandler(this.errorHandler);
+        this.svgHandler = new SVGHandler();
 
         this.initializeEventListeners();
         this.initializeResultPoints();
@@ -21,11 +24,13 @@ class MainApplication {
 
     private handleRadiusChange(): void {
         const r = this.domHandler.getSelectedRadius();
-        this.canvasHandler.setCurrentR(r);
+        if (r !== null) {
+            this.canvasHandler.setCurrentR(r);
+            this.svgHandler.setCurrentR(r);
+        }
     }
 
     private initializeResultPoints(): void {
-        // Инициализация точек из истории результатов
         const resultRows = document.querySelectorAll('.result-row');
         resultRows.forEach(row => {
             const cells = row.querySelectorAll('.result-cell');
@@ -36,12 +41,11 @@ class MainApplication {
                 const hit = cells[3].textContent === 'Yes';
 
                 if (!isNaN(x) && !isNaN(y) && !isNaN(r)) {
-                    this.canvasHandler.addResultPoint(x, y, hit);
+                    this.canvasHandler.addResultPoint(x, y, r, hit);
                 }
             }
         });
 
-        // Устанавливаем текущий радиус если есть в истории
         const firstResult = document.querySelector('.result-row');
         if (firstResult) {
             const rCell = firstResult.querySelector('.result-cell:nth-child(3)');
@@ -50,6 +54,7 @@ class MainApplication {
                 if (!isNaN(r)) {
                     this.domHandler.setRadiusValue(r);
                     this.canvasHandler.setCurrentR(r);
+                    this.svgHandler.setCurrentR(r);
                 }
             }
         }
@@ -66,7 +71,6 @@ class MainApplication {
     private handleFormSubmit(event: Event): void {
         event.preventDefault();
         const formValues = this.domHandler.getFormValues();
-        console.log("formValues", formValues)
         const validations = this.validator.validateAllFields(formValues.x, formValues.y, formValues.r);
 
         if (this.handleValidationResults(validations)) {

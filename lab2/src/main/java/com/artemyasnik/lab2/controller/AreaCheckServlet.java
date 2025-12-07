@@ -32,30 +32,22 @@ public class AreaCheckServlet extends HttpServlet {
         long startTime = System.nanoTime();
 
         try {
-            // Получаем параметры
             double x = Double.parseDouble(request.getParameter("x"));
             double y = Double.parseDouble(request.getParameter("y"));
             double r = Double.parseDouble(request.getParameter("radius"));
 
-            // Проверяем попадание в область
             boolean isHit = checkArea(x, y, r);
 
-            // Время выполнения
             long endTime = System.nanoTime();
-            long executionTime = (endTime - startTime) / 1000; // микросекунды
+            long executionTime = (endTime - startTime) / 1000;
 
-            // Текущее время
             String currentTime = LocalDateTime.now().format(
                     DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy")
             );
 
-            // Создаем объект результата
             Result result = new Result(x, y, r, isHit, currentTime, executionTime);
-
-            // Сохраняем результат через сервис
             resultService.addResult(getServletContext(), result);
 
-            // Загружаем историю результатов и устанавливаем атрибуты для JSP
             request.setAttribute("x", x);
             request.setAttribute("y", y);
             request.setAttribute("r", r);
@@ -64,18 +56,16 @@ public class AreaCheckServlet extends HttpServlet {
             request.setAttribute("executionTime", executionTime);
             request.setAttribute("resultsHistory", resultService.getResults(getServletContext()));
 
-            // Перенаправляем обратно на страницу с результатами
             request.getRequestDispatcher("/index.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
-            // Обработка ошибок валидации
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parameters");
         }
     }
 
     private boolean checkArea(double x, double y, double r) {
         // Проверка прямоугольника (левый верхний квадрант)
-        if (x <= 0 && y >= 0 && x >= -r && y <= r) {
+        if (x <= 0 && y >= 0 && x >= -r/2 && y <= r) {
             return true;
         }
 

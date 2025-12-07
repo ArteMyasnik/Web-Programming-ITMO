@@ -26,37 +26,39 @@
             <form id="coordinates-form" action="controller" method="post">
                 <div style="position: relative; width: 400px; height: 600px;">
                     <svg width="400px" height="600px" style="border: 1px solid #ccaa72;">
-                        <!-- Треугольник -->
-                        <polygon points="200,300 280,300 200,380" fill="#2f1f42" stroke="#5f398d" stroke-width="4"/>
+                        <!-- Треугольник (динамический) -->
+                        <polygon id="triangle" points="200,300 280,300 200,380" fill="#2f1f42" stroke="#5f398d" stroke-width="4"/>
 
-                        <!-- Прямоугольник -->
-                        <rect x="120" y="140" width="80" height="160" fill="#2f1f42" stroke="#5f398d" stroke-width="4"/>
+                        <!-- Прямоугольник (динамический) -->
+                        <rect id="rectangle" x="120" y="140" width="80" height="160" fill="#2f1f42" stroke="#5f398d" stroke-width="4"/>
 
-                        <!-- Четверть круга -->
-                        <path d="M200,300 L200,140 A160,160 0 0,1 360,300 L200,300 Z" fill="#2f1f42" stroke="#5f398d" stroke-width="4"></path>
+                        <!-- Четверть круга (динамический) -->
+                        <path id="quarter-circle" d="M200,300 L200,140 A160,160 0 0,1 360,300 L200,300 Z" fill="#2f1f42" stroke="#5f398d" stroke-width="4"></path>
 
-                        <!-- Arrow OY -->
+                        <!-- Arrow OY (статические элементы) -->
                         <line x1="200px" y1="40px" x2="200px" y2="560px" stroke-width="4" stroke="#ccaa72"/>
                         <line x1="200px" y1="40px" x2="210px" y2="50px" stroke-width="4" stroke="#ccaa72"/>
                         <line x1="200px" y1="40px" x2="190px" y2="50px" stroke-width="4" stroke="#ccaa72"/>
                         <text x="210px" y="50px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">Y</text>
 
-                        <!-- Arrow OX -->
+                        <!-- Arrow OX (статические элементы) -->
                         <line x1="20px" y1="300px" x2="390px" y2="300px" stroke-width="4" stroke="#ccaa72"/>
                         <line x1="380px" y1="290px" x2="390px" y2="300px" stroke-width="4" stroke="#ccaa72"/>
                         <line x1="380px" y1="310px" x2="390px" y2="300px" stroke-width="4" stroke="#ccaa72"/>
                         <text x="380px" y="280px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">X</text>
 
-                        <!-- Radius -->
-                        <text x="40px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R</text>
-                        <text x="120px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R/2</text>
-                        <text x="280px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R/2</text>
-                        <text x="360px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R</text>
+                        <!-- Подписи осей (динамические) -->
+                        <!-- Ось X -->
+                        <text id="label-x-0" x="40px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R</text>
+                        <text id="label-x-1" x="120px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R/2</text>
+                        <text id="label-x-2" x="280px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R/2</text>
+                        <text id="label-x-3" x="360px" y="294px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R</text>
 
-                        <text x="204px" y="140px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R</text>
-                        <text x="204px" y="220px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R/2</text>
-                        <text x="204px" y="380px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R/2</text>
-                        <text x="204px" y="460px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R</text>
+                        <!-- Ось Y -->
+                        <text id="label-y-0" x="204px" y="140px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R</text>
+                        <text id="label-y-1" x="204px" y="220px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">R/2</text>
+                        <text id="label-y-2" x="204px" y="380px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R/2</text>
+                        <text id="label-y-3" x="204px" y="460px" font-family="Roboto Light monospace;" font-size="24" fill="#ccaa72">-R</text>
                     </svg>
 
                     <canvas id="area-canvas" width="400" height="600"

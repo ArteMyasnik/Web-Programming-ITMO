@@ -3,6 +3,7 @@ import {ErrorHandler} from "./ErrorHandler";
 type CanvasPoint = {
     x: number;
     y: number;
+    r: number;
     hit?: boolean;
 }
 
@@ -40,13 +41,11 @@ class CanvasHandler {
         this.redrawPoints();
     }
 
-    private getRandomColor(): string {
-        const letters = "0123456789ABCDEF";
-        let color = "#";
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
+    private getPointColor(point: CanvasPoint): string {
+        /* if (!this.currentR || point.r !== this.currentR) {
+            return '#808080';
+        } */
+        return point.hit ? '#00ff00' : '#ff0000';
     }
 
     private handleCanvasClick(event: MouseEvent, errorHandler: ErrorHandler): void {
@@ -63,36 +62,34 @@ class CanvasHandler {
         const clickX = event.clientX - rect.left;
         const clickY = event.clientY - rect.top;
 
+        console.log("handle canvas click", clickX, clickY);
+
         const graphX = (clickX - this.CENTER_X) / scale;
         const graphY = (this.CENTER_Y - clickY) / scale;
 
-        console.log("handle canvas click", graphX, graphY);
+        console.log("handle canvas graph", graphX, graphY);
 
         this.submitPointToServer(graphX, graphY, this.currentR);
     }
 
     private submitPointToServer(x: number, y: number, r: number): void {
-        // Создаем скрытую форму для точных координат
         const hiddenForm = document.createElement('form');
         hiddenForm.method = 'post';
         hiddenForm.action = 'controller';
         hiddenForm.style.display = 'none';
 
-        // Скрытое поле для точного X
         const hiddenX = document.createElement('input');
         hiddenX.type = 'hidden';
         hiddenX.name = 'x';
         hiddenX.value = parseFloat(x.toFixed(2)).toString();
         hiddenForm.appendChild(hiddenX);
 
-        // Скрытое поле для точного Y
         const hiddenY = document.createElement('input');
         hiddenY.type = 'hidden';
         hiddenY.name = 'y';
         hiddenY.value = parseFloat(y.toFixed(2)).toString();
         hiddenForm.appendChild(hiddenY);
 
-        // Скрытое поле для радиуса
         const hiddenR = document.createElement('input');
         hiddenR.type = 'hidden';
         hiddenR.name = 'radius';
@@ -103,30 +100,35 @@ class CanvasHandler {
         hiddenForm.submit();
     }
 
-    private drawPoint(x: number, y: number, hit: boolean): void {
+    private drawPoint(point: CanvasPoint): void {
         if (!this.ctx || !this.currentR) return;
 
         const scale = this.GRAPH_SIZE / (this.MAX_R * 2);
-        const canvasX = this.CENTER_X + x * scale;
-        const canvasY = this.CENTER_Y - y * scale;
+        const canvasX = this.CENTER_X + point.x * scale * point.r / this.currentR;
+        const canvasY = this.CENTER_Y - point.y * scale * point.r / this.currentR;
 
-        console.log("draw point", x, y, hit);
+        // const normalizedX = point.x / point.r;
+        // const normalizedY = point.y / point.r;
+        // const effectiveX = normalizedX * this.currentR;
+        // const effectiveY = normalizedY * this.currentR;
+        // const canvasX = this.CENTER_X + effectiveX * scale;
+        // const canvasY = this.CENTER_Y - effectiveY * scale;
 
         this.ctx.beginPath();
         this.ctx.arc(canvasX, canvasY, 4, 0, 2 * Math.PI);
-        this.ctx.fillStyle = this.getRandomColor();
+        this.ctx.fillStyle = this.getPointColor(point);
         this.ctx.fill();
         this.ctx.strokeStyle = '#ffffff';
         this.ctx.lineWidth = 1;
         this.ctx.stroke();
     }
 
-    public clearPoints(): void {
+    /* public clearPoints(): void {
         this.points = [];
         if (this.ctx) {
             this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
         }
-    }
+    } */
 
     private redrawPoints(): void {
         if (!this.ctx) return;
@@ -134,22 +136,17 @@ class CanvasHandler {
         this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
 
         this.points.forEach(point => {
-            if (this.currentR) {
-                this.drawPoint(point.x, point.y, point.hit || false);
-            }
+            this.drawPoint(point);
         });
     }
 
-    public addResultPoint(x: number, y: number, hit: boolean): void {
-        const pointToAdd = { x, y, hit };
-
-        console.log("pointToAdd", pointToAdd);
+    public addResultPoint(x: number, y: number, r:number, hit: boolean): void {
+        const pointToAdd: CanvasPoint = { x, y, r, hit };
 
         this.points.push(pointToAdd);
         if (this.currentR) {
-            this.drawPoint(pointToAdd.x, pointToAdd.y, hit);
+            this.drawPoint(pointToAdd);
         }
-        console.log("points", this.points)
     }
 }
 

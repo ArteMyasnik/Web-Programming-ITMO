@@ -2,21 +2,25 @@ import { DOMHandler } from "./utils/DOMHandler";
 import { ErrorHandler } from "./utils/ErrorHandler";
 import { Validator } from "./utils/Validation";
 import { CanvasHandler } from "./utils/CanvasHandler";
+import { SVGHandler } from "./utils/SVGHandler";
 class MainApplication {
     constructor() {
         this.domHandler = new DOMHandler();
         this.errorHandler = new ErrorHandler();
         this.validator = new Validator();
         this.canvasHandler = new CanvasHandler(this.errorHandler);
+        this.svgHandler = new SVGHandler();
         this.initializeEventListeners();
         this.initializeResultPoints();
     }
     handleRadiusChange() {
         const r = this.domHandler.getSelectedRadius();
-        this.canvasHandler.setCurrentR(r);
+        if (r !== null) {
+            this.canvasHandler.setCurrentR(r);
+            this.svgHandler.setCurrentR(r);
+        }
     }
     initializeResultPoints() {
-        // Инициализация точек из истории результатов
         const resultRows = document.querySelectorAll('.result-row');
         resultRows.forEach(row => {
             const cells = row.querySelectorAll('.result-cell');
@@ -26,11 +30,10 @@ class MainApplication {
                 const r = parseFloat(cells[2].textContent || '');
                 const hit = cells[3].textContent === 'Yes';
                 if (!isNaN(x) && !isNaN(y) && !isNaN(r)) {
-                    this.canvasHandler.addResultPoint(x, y, hit);
+                    this.canvasHandler.addResultPoint(x, y, r, hit);
                 }
             }
         });
-        // Устанавливаем текущий радиус если есть в истории
         const firstResult = document.querySelector('.result-row');
         if (firstResult) {
             const rCell = firstResult.querySelector('.result-cell:nth-child(3)');
@@ -39,6 +42,7 @@ class MainApplication {
                 if (!isNaN(r)) {
                     this.domHandler.setRadiusValue(r);
                     this.canvasHandler.setCurrentR(r);
+                    this.svgHandler.setCurrentR(r);
                 }
             }
         }
@@ -55,7 +59,6 @@ class MainApplication {
         var _a;
         event.preventDefault();
         const formValues = this.domHandler.getFormValues();
-        console.log("formValues", formValues);
         const validations = this.validator.validateAllFields(formValues.x, formValues.y, formValues.r);
         if (this.handleValidationResults(validations)) {
             (_a = this.domHandler.getForm()) === null || _a === void 0 ? void 0 : _a.submit();
