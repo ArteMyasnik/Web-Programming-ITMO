@@ -1,36 +1,26 @@
-import {DOMHandler} from "./utils/DOMHandler";
-import {ErrorHandler} from "./utils/ErrorHandler";
-import {FieldValidator, Validator} from "./utils/Validation";
-import {CanvasHandler} from "./utils/CanvasHandler";
-import {SVGHandler} from "./utils/SVGHandler";
-
+import { DOMHandler } from "./utils/DOMHandler";
+import { ErrorHandler } from "./utils/ErrorHandler";
+import { Validator } from "./utils/Validation";
+import { CanvasHandler } from "./utils/CanvasHandler";
+import { SVGHandler } from "./utils/SVGHandler";
 class MainApplication {
-    private domHandler: DOMHandler;
-    private errorHandler: ErrorHandler;
-    private validator: Validator;
-    private canvasHandler: CanvasHandler;
-    private svgHandler: SVGHandler;
-
     constructor() {
         this.domHandler = new DOMHandler();
         this.errorHandler = new ErrorHandler();
         this.validator = new Validator();
         this.canvasHandler = new CanvasHandler(this.errorHandler);
         this.svgHandler = new SVGHandler();
-
         this.initializeEventListeners();
         this.initializeResultPoints();
     }
-
-    private handleRadiusChange(): void {
+    handleRadiusChange() {
         const r = this.domHandler.getSelectedRadius();
         if (r !== null) {
             this.canvasHandler.setCurrentR(r);
             this.svgHandler.setCurrentR(r);
         }
     }
-
-    private initializeResultPoints(): void {
+    initializeResultPoints() {
         const resultRows = document.querySelectorAll('.result-row');
         resultRows.forEach(row => {
             const cells = row.querySelectorAll('.result-cell');
@@ -39,13 +29,11 @@ class MainApplication {
                 const y = parseFloat(cells[1].textContent || '');
                 const r = parseFloat(cells[2].textContent || '');
                 const hit = cells[3].textContent === 'Yes';
-
                 if (!isNaN(x) && !isNaN(y) && !isNaN(r)) {
                     this.canvasHandler.addResultPoint(x, y, r, hit);
                 }
             }
         });
-
         const firstResult = document.querySelector('.result-row');
         if (firstResult) {
             const rCell = firstResult.querySelector('.result-cell:nth-child(3)');
@@ -59,47 +47,43 @@ class MainApplication {
             }
         }
     }
-
-    private initializeEventListeners(): void {
+    initializeEventListeners() {
+        var _a;
         this.domHandler.addYInputListener((e) => this.handleYInput(e));
         this.domHandler.addXChangeListener(() => this.hideError('error-x'));
         this.domHandler.addRadiusChangeListener(() => this.handleRadiusChange());
-        this.domHandler.getForm()?.reset();
+        (_a = this.domHandler.getForm()) === null || _a === void 0 ? void 0 : _a.reset();
         this.domHandler.addFormSubmitListener((e) => this.handleFormSubmit(e));
     }
-
-    private handleFormSubmit(event: Event): void {
+    handleFormSubmit(event) {
+        var _a;
         event.preventDefault();
         const formValues = this.domHandler.getFormValues();
         const validations = this.validator.validateAllFields(formValues.x, formValues.y, formValues.r);
-
         if (this.handleValidationResults(validations)) {
-            this.domHandler.getForm()?.submit();
+            (_a = this.domHandler.getForm()) === null || _a === void 0 ? void 0 : _a.submit();
         }
     }
-
-    private handleYInput(event: Event): void {
-        const input = event.target as HTMLInputElement;
+    handleYInput(event) {
+        const input = event.target;
         input.value = input.value.replace(/[^0-9.-]/g, '');
         this.errorHandler.hideError('error-y');
     }
-
-    private handleValidationResults(validations: FieldValidator[]): boolean {
+    handleValidationResults(validations) {
         this.errorHandler.hideAllErrors();
         return validations.every(validation => {
             if (!validation.result.isValid) {
-                this.errorHandler.showError(validation.errorId, validation.result.errorMessage!);
+                this.errorHandler.showError(validation.errorId, validation.result.errorMessage);
                 return false;
             }
             return true;
         });
     }
-
-    private hideError(errorId: string): void {
+    hideError(errorId) {
         this.errorHandler.hideError(errorId);
     }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     new MainApplication();
 });
+//# sourceMappingURL=main.js.map

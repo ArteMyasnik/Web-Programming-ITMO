@@ -4,15 +4,17 @@ body {
     color: #ccaa72;
     margin: 0;
     padding: 0;
+    font-family: "Roboto Light", sans-serif;
 }
 
 /* Главный контейнер */
 #main-container {
     border: 5px solid #ccaa72;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 /* Шапка с ФИО и группой */
@@ -21,9 +23,13 @@ body {
     color: #ccaa72;
     width: 100%;
     height: 15%;
+    min-height: 120px;
     text-align: center;
-    padding: 3px;
+    padding: 10px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #header-section h1, #header-section h2 {
@@ -33,63 +39,116 @@ body {
 /* Текст с информацией о группе и варианте */
 .group-variant {
     font-family: "Roboto Light", monospace;
-    font-size: 30px;
+    font-size: clamp(20px, 3vw, 30px);
 }
 
 /* Секция с основным контентом */
 #content-section {
     display: flex;
-    height: 85%;
+    height: 84%;
     box-sizing: border-box;
+    flex-wrap: wrap;
 }
 
-/* Колонки основного контенту */
+/* Колонки основного контента */
 #aside-column, #main-column {
     border: 5px solid #ccaa72;
-    font-size: 20px;
+    font-size: clamp(14px, 2vw, 20px);
     font-family: "Roboto Light", sans-serif;
-    padding: 10px;
+    padding: 15px;
     box-sizing: border-box;
 }
 
 /* Левая колонка с формой */
 #aside-column {
-    width: 30%;
+    width: 35%;
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     gap: 20px;
+    min-width: 300px;
 }
 
-/* График SVG */
-#aside-column svg {
-    width: 250px;
-    height: 350px;
+/* Контейнер для SVG и Canvas */
+.canvas-container {
+    position: relative;
+    width: 400px;
+    height: 600px;
     border: 1px solid #ccaa72;
-    flex-shrink: 0;
+    background: #1a1029;
+    cursor: pointer;
+}
+
+.canvas-container:hover {
+    box-shadow: 0 0 15px rgba(204, 170, 114, 0.7);
+    transform: scale(1.02);
+}
+
+/* SVG график */
+#area-svg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* Canvas поверх SVG */
+#area-canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    background: transparent;
+    cursor: crosshair;
+}
+
+/* Информационное сообщение */
+.canvas-info {
+    font-size: 12px;
+    color: #8a6f3e;
+    margin-top: 5px;
+    font-style: italic;
+    text-align: center;
 }
 
 /* Форма ввода */
-#aside-column form {
-    flex: 1;
-    min-width: 0;
+#coordinates-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 /* Правая колонка с результатами */
 #main-column {
-    width: 70%;
-    vertical-align: top;
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    min-width: 400px;
+    flex: 1;
+}
+
+#main-column h2 {
+    margin: 0 0 15px 0;
     text-align: center;
+    font-size: clamp(18px, 2.5vw, 24px);
 }
 
 /* Контейнер результатов */
 #results-container {
     text-align: center;
     width: 100%;
-    border: 5px solid #ccaa72;
-    font-size: 14px;
+    border: 3px solid #ccaa72;
+    font-size: clamp(12px, 1.5vw, 14px);
     background: #2f1f42;
-    margin-top: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100% - 50px);
 }
 
 /* Заголовок таблицы результатов */
@@ -99,12 +158,17 @@ body {
     color: #ccaa72;
     font-weight: bold;
     border-bottom: 3px solid #ccaa72;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 /* Тело таблицы результатов */
 .results-body {
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    flex: 1;
 }
 
 /* Строка результата */
@@ -113,17 +177,33 @@ body {
     border-bottom: 1px solid #ccaa72;
 }
 
-.result-row:last-child {
-    border-bottom: none;
+.result-row:hover {
+    background: rgba(95, 57, 141, 0.2);
+}
+
+/* Подсветка новой строки */
+.result-row:first-child {
+    background: rgba(95, 57, 141, 0.3);
+}
+
+@keyframes highlightRow {
+    0% {
+        background: rgba(95, 57, 141, 0.6);
+    }
+    100% {
+        background: rgba(95, 57, 141, 0.3);
+    }
 }
 
 /* Ячейки заголовка таблицы результатов */
 .result-header-cell {
     flex: 1;
-    padding: 10px 5px;
+    padding: 12px 8px;
     border-right: 1px solid #ccaa72;
     font-family: "Roboto Light", sans-serif;
     text-align: center;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .result-header-cell:last-child {
@@ -133,14 +213,26 @@ body {
 /* Ячейки таблицы результатов */
 .result-cell {
     flex: 1;
-    padding: 8px 5px;
+    padding: 10px 8px;
     border-right: 1px solid #ccaa72;
     font-family: "Roboto Light", sans-serif;
     text-align: center;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .result-cell:last-child {
     border-right: none;
+}
+
+/* Стили для статуса попадания */
+.result-cell:nth-child(4) {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.result-cell:nth-child(4)[data-hit="No"] {
+    color: #f44336;
 }
 
 /* Таблица формы ввода */
@@ -151,8 +243,9 @@ body {
 
 .form-row {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 /* Отступ для меток полей ввода */
@@ -160,6 +253,7 @@ body {
     padding-right: 15px;
     width: 120px;
     flex-shrink: 0;
+    margin-bottom: 5px;
 }
 
 /* Метки полей формы */
@@ -167,7 +261,7 @@ body {
     display: block;
     margin-bottom: 5px;
     font-family: "Roboto Light", sans-serif;
-    font-size: 16px;
+    font-size: clamp(14px, 1.8vw, 16px);
     color: #ccaa72;
     white-space: nowrap;
 }
@@ -175,55 +269,71 @@ body {
 /* Поля ввода формы */
 .form-input {
     flex-grow: 1;
+    min-width: 150px;
 }
 
 .form-submit {
     width: 100%;
+    margin-top: 10px;
 }
 
 /* Стили выпадающего списка */
 select {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 12px;
     background: #2f1f42;
     border: 2px solid #ccaa72;
-    border-radius: 4px;
+    border-radius: 6px;
     color: #ccaa72;
     font-family: "Roboto Light", sans-serif;
-    font-size: 14px;
+    font-size: clamp(13px, 1.6vw, 14px);
     outline: none;
-    transition: border-color 0.3s ease;
     box-sizing: border-box;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23ccaa72' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
 }
 
 select:focus {
     border-color: #5f398d;
+    box-shadow: 0 0 8px rgba(95, 57, 141, 0.5);
+}
+
+select:hover {
+    border-color: #8a6f3e;
 }
 
 /* Опции выпадающего списка */
 select option {
     background: #2f1f42;
     color: #ccaa72;
-    padding: 8px;
+    padding: 10px;
 }
 
 /* Стили текстовых полей ввода */
 input[type="text"] {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 12px;
     background: #2f1f42;
     border: 2px solid #ccaa72;
-    border-radius: 4px;
+    border-radius: 6px;
     color: #ccaa72;
     font-family: "Roboto Light", sans-serif;
-    font-size: 14px;
+    font-size: clamp(13px, 1.6vw, 14px);
     outline: none;
-    transition: border-color 0.3s ease;
     box-sizing: border-box;
 }
 
 input[type="text"]:focus {
     border-color: #5f398d;
+    box-shadow: 0 0 8px rgba(95, 57, 141, 0.5);
+}
+
+input[type="text"]:hover {
+    border-color: #8a6f3e;
 }
 
 /* Плейсхолдеры текстовых полей */
@@ -232,10 +342,11 @@ input[type="text"]::placeholder {
     opacity: 0.7;
 }
 
+/* Стили радиокнопок */
 .radio-group {
     display: flex;
-    gap: 10px;
-    margin-bottom: 5px;
+    gap: 12px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
 }
 
@@ -243,59 +354,110 @@ input[type="text"]::placeholder {
     display: flex;
     align-items: center;
     cursor: pointer;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.radio-option:hover {
+    background: rgba(204, 170, 114, 0.1);
+    border-color: #ccaa72;
 }
 
 .radio-option input[type="radio"] {
-    margin-right: 5px;
+    margin-right: 8px;
+    transform: scale(1.2);
+    accent-color: #5f398d;
+    cursor: pointer;
+}
+
+.radio-label {
+    font-size: clamp(13px, 1.6vw, 14px);
+    color: #ccaa72;
+    cursor: pointer;
 }
 
 /* Стили кнопки отправки */
 button[type="submit"] {
     width: 100%;
-    padding: 12px 24px;
-    background: #2f1f42;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #2f1f42 0%, #1a1029 100%);
     border: 2px solid #ccaa72;
-    border-radius: 4px;
+    border-radius: 8px;
     color: #ccaa72;
     font-family: "Roboto Light", sans-serif;
-    font-size: 16px;
+    font-size: clamp(14px, 1.8vw, 16px);
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
+    margin-top: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* Эффекты при наведении на кнопку */
 button[type="submit"]:hover {
-    background: #5f398d;
+    background: linear-gradient(135deg, #5f398d 0%, #2f1f42 100%);
     border-color: #5f398d;
     color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(95, 57, 141, 0.4);
 }
 
 button[type="submit"]:active {
-    transform: translateY(1px);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(95, 57, 141, 0.4);
 }
 
 /* Подсказки диапазонов значений */
 .range-hint {
-    font-size: 12px;
+    font-size: clamp(11px, 1.4vw, 12px);
     color: #8a6f3e;
-    margin-top: 3px;
+    margin-top: 5px;
     font-family: "Roboto Light", sans-serif;
-}
-
-/* Обозначение обязательных полей */
-.required {
-    color: #ff6b6b;
+    font-style: italic;
 }
 
 /* Сообщения об ошибках */
 .error-message {
     height: 18px;
-    font-size: 12px;
-    margin-top: 4px;
+    font-size: clamp(11px, 1.4vw, 12px);
+    margin-top: 6px;
     font-family: "Roboto Light", sans-serif;
     font-weight: bold;
     color: #ff6b6b;
+}
+
+/* Стили для скроллбара */
+.results-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.results-body::-webkit-scrollbar-track {
+    background: #1a1029;
+}
+
+.results-body::-webkit-scrollbar-thumb {
+    background: #5f398d;
+    border-radius: 4px;
+}
+
+.results-body::-webkit-scrollbar-thumb:hover {
+    background: #ccaa72;
+}
+
+/* Контейнер для графика и формы */
+.form-content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* Контейнер полей ввода */
+.fields-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }

@@ -1,10 +1,16 @@
 package com.artemyasnik.lab2.controller;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import com.artemyasnik.lab2.service.ResultService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@WebServlet("/controller")
 public class ControllerServlet extends HttpServlet {
+    private final ResultService resultService = new ResultService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -20,18 +26,21 @@ public class ControllerServlet extends HttpServlet {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Получаем параметры из запроса
         String x = request.getParameter("x");
         String y = request.getParameter("y");
         String r = request.getParameter("radius");
 
-        // Валидация параметров
+        // Если есть параметры - отправляем на проверку
         if (x != null && y != null && r != null) {
-            // Перенаправляем в AreaCheckServlet для проверки попадания в область
             request.getRequestDispatcher("/area-check").forward(request, response);
         } else {
-            // Если параметры отсутствуют, показываем основную страницу
+            // Иначе показываем главную страницу с историей
+            loadResultsToRequest(request);
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
+    }
+
+    private void loadResultsToRequest(HttpServletRequest request) {
+        request.setAttribute("resultsHistory", resultService.getResults(getServletContext()));
     }
 }
