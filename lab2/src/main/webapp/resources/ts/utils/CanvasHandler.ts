@@ -42,9 +42,9 @@ class CanvasHandler {
     }
 
     private getPointColor(point: CanvasPoint): string {
-        /* if (!this.currentR || point.r !== this.currentR) {
+        if (!this.currentR || point.r !== this.currentR) {
             return '#808080';
-        } */
+        }
         return point.hit ? '#00ff00' : '#ff0000';
     }
 
